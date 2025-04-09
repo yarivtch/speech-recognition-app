@@ -77,3 +77,6 @@ MIT License - ראה קובץ [LICENSE](LICENSE) לפרטים נוספים.
 
 פותח על ידי יריב צ'חנובסקי כפרויקט קוד פתוח.
 
+## דמו
+ניתן לראות את האפליקציה בפעולה [כאן](https://yarivtch.github.io/speech-recognition-app)
+
