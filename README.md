@@ -19,7 +19,7 @@
 ## התקנה
 
 1. שכפול הפרויקט:
-git clone https://github.com/your-username/speech-recognition-app.git
+git clone https://github.com/yarivtch/speech-recognition-app.git
 cd speech-recognition-app
 
 2. התקנת תלויות:
