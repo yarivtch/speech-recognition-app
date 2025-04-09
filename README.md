@@ -14,9 +14,10 @@
 - 🌐 תמיכה מלאה ב-RTL
 
 ## דרישות מערכת
-- Node.js (גרסה 14 ומעלה)
-- דפדפן מודרני עם תמיכה ב-Web Speech API
+- דפדפן Chrome (מומלץ), Edge או Firefox עדכני
+- במכשירים ניידים: דפדפן Chrome בלבד
 - מיקרופון תקין
+- הרשאת גישה למיקרופון
 
 ## התקנה
 

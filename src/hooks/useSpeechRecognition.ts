@@ -13,7 +13,41 @@ interface UseSpeechRecognitionReturn {
   setText: (text: string) => void;
   currentSpeaker: number;
   setSpeaker: (id: number) => void;
+  compatibility: BrowserCompatibility;
 }
+
+interface BrowserCompatibility {
+  isCompatible: boolean;
+  isMobile: boolean;
+  browser: string;
+}
+
+const checkBrowserCompatibility = (): BrowserCompatibility => {
+  const userAgent = navigator.userAgent || navigator.vendor;
+  
+  // בדיקת מכשיר נייד
+  const isMobile = /android|ipad|iphone|ipod/i.test(userAgent.toLowerCase());
+  
+  // זיהוי דפדפן
+  const isChrome = /chrome/i.test(userAgent);
+  const isSafari = /safari/i.test(userAgent);
+  const isFirefox = /firefox/i.test(userAgent);
+  const isEdge = /edg/i.test(userAgent);
+  
+  let browser = 'אחר';
+  if (isChrome) browser = 'Chrome';
+  else if (isSafari) browser = 'Safari';
+  else if (isFirefox) browser = 'Firefox';
+  else if (isEdge) browser = 'Edge';
+
+  // בדיקת תמיכה ב-Speech Recognition
+  const isCompatible = (
+    ('webkitSpeechRecognition' in window) || 
+    ('SpeechRecognition' in window)
+  ) && (!isMobile || (isMobile && isChrome));
+
+  return { isCompatible, isMobile, browser };
+};
 
 export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   const [text, setText] = useState<string>('');
@@ -24,8 +58,31 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [currentSpeaker, setCurrentSpeaker] = useState<number>(1);
   const [lastTranscript, setLastTranscript] = useState<string>('');
+  const [compatibility, setCompatibility] = useState<BrowserCompatibility>({ 
+    isCompatible: false, 
+    isMobile: false, 
+    browser: '' 
+  });
 
   useEffect(() => {
+    const compat = checkBrowserCompatibility();
+    setCompatibility(compat);
+
+    if (!compat.isCompatible) {
+      if (compat.isMobile) {
+        setError(
+          'זיהוי דיבור במכשירים ניידים נתמך רק בדפדפן Chrome. ' +
+          'אנא השתמש בדפדפן Chrome או עבור למחשב שולחני.'
+        );
+      } else {
+        setError(
+          `הדפדפן ${compat.browser} אינו תומך בזיהוי דיבור. ` +
+          'אנא השתמש בדפדפן Chrome, Edge או Firefox עדכני.'
+        );
+      }
+      return;
+    }
+
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       setError('הדפדפן שלך לא תומך בזיהוי דיבור');
       return;
@@ -205,6 +262,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
     clearText,
     setText,
     currentSpeaker,
-    setSpeaker
+    setSpeaker,
+    compatibility,
   };
 }; 
