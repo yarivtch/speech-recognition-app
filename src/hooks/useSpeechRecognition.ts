@@ -20,19 +20,20 @@ interface BrowserCompatibility {
   isCompatible: boolean;
   isMobile: boolean;
   browser: string;
+  isChrome: boolean;
 }
 
 const checkBrowserCompatibility = (): BrowserCompatibility => {
   const userAgent = navigator.userAgent || navigator.vendor;
   
-  // בדיקת מכשיר נייד
-  const isMobile = /android|ipad|iphone|ipod/i.test(userAgent.toLowerCase());
+  // בדיקה מדויקת יותר למכשיר נייד
+  const isMobile = /android|iphone|ipad|ipod|webos|iemobile|opera mini/i.test(userAgent.toLowerCase());
   
-  // זיהוי דפדפן
-  const isChrome = /chrome/i.test(userAgent);
-  const isSafari = /safari/i.test(userAgent);
-  const isFirefox = /firefox/i.test(userAgent);
-  const isEdge = /edg/i.test(userAgent);
+  // זיהוי דפדפן מדויק יותר
+  const isChrome = /chrome|crios/i.test(userAgent) && !/edg|edge/i.test(userAgent);
+  const isSafari = /safari/i.test(userAgent) && !/chrome|crios/i.test(userAgent);
+  const isFirefox = /firefox|fxios/i.test(userAgent);
+  const isEdge = /edg|edge/i.test(userAgent);
   
   let browser = 'אחר';
   if (isChrome) browser = 'Chrome';
@@ -40,13 +41,18 @@ const checkBrowserCompatibility = (): BrowserCompatibility => {
   else if (isFirefox) browser = 'Firefox';
   else if (isEdge) browser = 'Edge';
 
-  // בדיקת תמיכה ב-Speech Recognition
-  const isCompatible = (
-    ('webkitSpeechRecognition' in window) || 
-    ('SpeechRecognition' in window)
-  ) && (!isMobile || (isMobile && isChrome));
+  // בדיקת תמיכה מדויקת יותר
+  const hasSpeechRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  
+  // בדפדפן Chrome בנייד, נוודא שיש גם תמיכה וגם הרשאות
+  const isCompatible = hasSpeechRecognition && (!isMobile || (isMobile && isChrome));
 
-  return { isCompatible, isMobile, browser };
+  return { 
+    isCompatible, 
+    isMobile, 
+    browser,
+    isChrome 
+  };
 };
 
 export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
@@ -61,7 +67,8 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
   const [compatibility, setCompatibility] = useState<BrowserCompatibility>({ 
     isCompatible: false, 
     isMobile: false, 
-    browser: '' 
+    browser: '',
+    isChrome: false 
   });
 
   useEffect(() => {
@@ -70,10 +77,18 @@ export const useSpeechRecognition = (): UseSpeechRecognitionReturn => {
 
     if (!compat.isCompatible) {
       if (compat.isMobile) {
-        setError(
-          'זיהוי דיבור במכשירים ניידים נתמך רק בדפדפן Chrome. ' +
-          'אנא השתמש בדפדפן Chrome או עבור למחשב שולחני.'
-        );
+        if (!compat.isChrome) {
+          setError(
+            'זיהוי דיבור במכשירים ניידים נתמך רק בדפדפן Chrome. ' +
+            'אנא השתמש בדפדפן Chrome או עבור למחשב שולחני.'
+          );
+        } else {
+          // אם זה Chrome בנייד אבל עדיין לא עובד
+          setError(
+            'נראה שיש בעיה בהרשאות המיקרופון. ' +
+            'אנא וודא שנתת הרשאת גישה למיקרופון.'
+          );
+        }
       } else {
         setError(
           `הדפדפן ${compat.browser} אינו תומך בזיהוי דיבור. ` +

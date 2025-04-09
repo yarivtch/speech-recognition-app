@@ -39,9 +39,9 @@ export const SpeechRecognitionDemo: React.FC = () => {
           <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 max-w-md text-center text-white border border-white/20">
             <h2 className="text-2xl font-bold mb-4">תאימות דפדפן</h2>
             <p className="mb-6">{error}</p>
-            {compatibility.isMobile && (
+            {compatibility.isMobile && !compatibility.isChrome && (
               <a 
-                href="googlechrome://navigate?url=https://yarivtch.github.io/speech-recognition-app/"
+                href={`intent://speech-recognition-app#Intent;scheme=https;package=com.android.chrome;end`}
                 className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl transition-colors duration-200"
               >
                 פתח ב-Chrome
