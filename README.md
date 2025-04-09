@@ -2,6 +2,8 @@
 
 אפליקציית React לזיהוי דיבור בזמן אמת עם תמיכה מלאה בעברית. האפליקציה מאפשרת זיהוי דיבור מרובה דוברים, עם זיהוי אוטומטי של סימני פיסוק וממשק משתמש מודרני.
 
+**[👉 לחץ כאן לצפייה באפליקציה 👈](https://yarivtch.github.io/speech-recognition-app/)**
+
 ## תכונות עיקריות
 - 🎤 זיהוי דיבור בזמן אמת בעברית
 - 👥 תמיכה במספר דוברים עם זיהוי החלפת דובר
